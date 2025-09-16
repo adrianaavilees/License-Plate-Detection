@@ -41,15 +41,16 @@ def find_license_plates_in_vehicle(vehicle_region):
         # Verify ratio and area tipically of license plates
         if h > 0:  # Prevent division by zero
             aspect_ratio = w / h
-        if 2 < aspect_ratio < 6:
-            possible_plates.append({
-                'bbox': (x, y, x + w, y + h),
-                'area': area,
-                'aspect_ratio': aspect_ratio
-            })
+            # Typical spanish license plate aspect ratio 
+            if 2 < aspect_ratio < 6:
+                possible_plates.append({
+                    'bbox': (x, y, x + w, y + h),
+                    'area': area,
+                    'aspect_ratio': aspect_ratio
+                })
     possible_plates.sort(key=lambda x: x['area'], reverse=True)
 
-    return possible_plates[:2] #? Ponemos un maximo por cada foto de possibles matriculas detectadas?
+    return possible_plates[:3] #? Ponemos un maximo por cada foto de possibles matriculas detectadas?
 
 def detect_license_plate(image_path, output_path="detected_image3.jpg"):
     """Detect license plates in an image using YOLOv8"""
@@ -63,8 +64,8 @@ def detect_license_plate(image_path, output_path="detected_image3.jpg"):
     results = model(image)
 
     license_plates = []
-    
-    count = 0
+    vehicle_count = 0
+
     for result in results:
         boxes = result.boxes
         if boxes is not None:
@@ -78,11 +79,29 @@ def detect_license_plate(image_path, output_path="detected_image3.jpg"):
 
                 # Find license plates within the vehicle region
                 plate_candidates = find_license_plates_in_vehicle(vehicle_region)       
-                print(plate_candidates)
-                # Draw bounding box on the image
-                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
-                cv2.putText(image, f"Conf: {conf:.2f}", (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2) 
-                count += 1
+    
+                # Draw bounding box of the car (blue)
+                cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
+                cv2.putText(image, f"Conf: {conf:.2f}", (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,0,0), 2) 
+                
+                #Draw bounding boxes of the license plates (green)
+                for i, plate in enumerate(plate_candidates):
+                    px1, py1, px2, py2 = plate['bbox']
+                    # Adjust coordinates relative to the original image
+                    abs_px1, abs_py1 = int(x1) + px1, int(y1) + py1
+                    abs_px2, abs_py2 = int(x1) + px2, int(y1) + py2
+                    
+                    cv2.rectangle(image, (abs_px1, abs_py1), (abs_px2, abs_py2), (0, 255, 0), 2)
+                    cv2.putText(image, f"Plate {i+1}", (abs_px1, abs_py1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1) 
+                    
+                    license_plates.append({
+                        'vehicle_id': vehicle_count,
+                        'vehicle_bbox': (int(x1), int(y1), int(x2), int(y2)),
+                        'bbox': (abs_px1, abs_py1, abs_px2, abs_py2),
+                        'confidence': conf
+                    })
+                    
+                vehicle_count += 1
 
     cv2.imwrite(output_path, image) 
     print(f"Processed image saved to {output_path}")
@@ -147,7 +166,3 @@ for plate in license:
     processed_image = preprocess_license_plate(image, bbox)
     text = extract_text_from_plate(processed_image)
     print(f"Detected License Plate: {text} ")
-    # Draw bounding box and text on the image
-    x1, y1, x2, y2 = bbox
-    cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-    cv2.putText(image, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)

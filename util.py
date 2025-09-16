@@ -26,8 +26,20 @@ def find_license_plates_in_vehicle(vehicle_region):
         return []
     
     gray = cv2.cvtColor(vehicle_region, cv2.COLOR_BGR2GRAY)
+
+    # # Detect white rectangular regions that could be license plates
+    # _, white_mask = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY) # try 180, 255
+
+    # # Apply some morphological operations to clean up the mask
+    # kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    # white_regions = cv2.morphologyEx(white_mask, cv2.MORPH_CLOSE, kernel)
+    
     filtered = cv2.bilateralFilter(gray, 11, 17, 17)
     edges = cv2.Canny(filtered, 30, 200)
+
+    # Combine white regions and edges
+    # combined = cv2.bitwise_and(edges, white_regions)
+    
     # Find contours in the edged image
     contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -42,17 +54,21 @@ def find_license_plates_in_vehicle(vehicle_region):
         if h > 0:  # Prevent division by zero
             aspect_ratio = w / h
             # Typical spanish license plate aspect ratio 
-            if 2 < aspect_ratio < 6:
+            if 2 < aspect_ratio < 6: 
+                #Filter relative area too small or too big respect the car
+                width, height = vehicle_region.shape[1], vehicle_region.shape[0]
+                relative_area = area / (width * height)
+                #if relative_area > 0.010 and relative_area < 0.35: 
                 possible_plates.append({
-                    'bbox': (x, y, x + w, y + h),
-                    'area': area,
-                    'aspect_ratio': aspect_ratio
-                })
+                        'bbox': (x, y, x + w, y + h),
+                        'area': area,
+                        'aspect_ratio': aspect_ratio
+                    })
     possible_plates.sort(key=lambda x: x['area'], reverse=True)
 
     return possible_plates[:3] #? Ponemos un maximo por cada foto de possibles matriculas detectadas?
 
-def detect_license_plate(image_path, output_path="detected_image3.jpg"):
+def detect_license_plate(image_path, output_path="detected_image14.jpg"):
     """Detect license plates in an image using YOLOv8"""
     # Read the image
     image = cv2.imread(image_path)
@@ -70,13 +86,18 @@ def detect_license_plate(image_path, output_path="detected_image3.jpg"):
         boxes = result.boxes
         if boxes is not None:
             for box in boxes:
+                class_id = int(box.cls[0].cpu().numpy())
+                # Check if the detected object is a vechicle
+                if class_id not in [2,2,5,7]:  # car, motorcycle, bus, truck 
+                    continue
+                
                 # Obtain bounding box coordinates
                 x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
                 conf = box.conf[0].cpu().numpy()
 
                 # Extract vehicle region
                 vehicle_region = image[int(y1):int(y2), int(x1):int(x2)]
-
+                
                 # Find license plates within the vehicle region
                 plate_candidates = find_license_plates_in_vehicle(vehicle_region)       
     
@@ -138,6 +159,8 @@ def preprocess_license_plate(image, bbox):
     return processed
 
 def extract_text_from_plate(processed_image):
+    #TODO: diccionario de correciones, por ejemplo, si detecta 0 en lugar de O, o 1 en lugar de I, etc.
+    #TODO: diccionario sin las letras que no se usan como Q, Ñ, vocales, etc.
     if processed_image is None:
         return ""
     
@@ -151,7 +174,6 @@ def extract_text_from_plate(processed_image):
     cleaned_text = ''.join(c for c in full_text if c.isalnum())
 
     # Validate the format of the license plate (spanish: 4 digits and 3 letters)
-    #! esto es muy restrictivo de momento que no detecta bien
     # if len(cleaned_text) == 7 and cleaned_text[:4].isdigit() and cleaned_text[4:].isalpha():
     #     return cleaned_text
     # else:
@@ -160,6 +182,9 @@ def extract_text_from_plate(processed_image):
     
 # Example usage
 license, image = detect_license_plate(r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_Matriculas\PXL_20210921_095129495.jpg")
+#license, image = detect_license_plate(r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_Matriculas\WhatsApp Image 2025-09-12 at 14.34.01 (1).jpeg")
+#license, image = detect_license_plate(r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_Matriculas\PXL_20210921_094938026.jpg")
+
 reader = easyocr.Reader(['en'], gpu=False)  # Initialize EasyOCR reader
 for plate in license:
     bbox = plate['bbox']

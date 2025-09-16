@@ -10,6 +10,7 @@ import torch
 # Load the YOLOv8 model
 model = YOLO("yolov8n.pt") #! Esta detectando coches, NO matriculas. Detecta 4 coches en la imagen de prueba
 
+"https://www.kaggle.com/code/ztrollk/license-plate-detection-with-yolov8"
 "https://docs.ultralytics.com/es/datasets/detect/coco/#what-is-the-coco-dataset-and-why-is-it-important-for-computer-vision"
 "https://www.kaggle.com/code/yyazidd/yolov8-license-plate-detection"
 
@@ -50,7 +51,7 @@ def find_license_plates_in_vehicle(vehicle_region):
 
     return possible_plates[:2] #? Ponemos un maximo por cada foto de possibles matriculas detectadas?
 
-def detect_license_plate(image_path, output_path="detected_image2.jpg"):
+def detect_license_plate(image_path, output_path="detected_image3.jpg"):
     """Detect license plates in an image using YOLOv8"""
     # Read the image
     image = cv2.imread(image_path)

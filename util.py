@@ -68,7 +68,7 @@ def find_license_plates_in_vehicle(vehicle_region):
 
     return possible_plates[:3] #? Ponemos un maximo por cada foto de possibles matriculas detectadas?
 
-def detect_license_plate(image_path, output_path="detected_image14.jpg"):
+def detect_license_plate(image_path, output_path="detected_image12.jpg"):
     """Detect license plates in an image using YOLOv8"""
     # Read the image
     image = cv2.imread(image_path)
@@ -181,9 +181,9 @@ def extract_text_from_plate(processed_image):
     return cleaned_text
     
 # Example usage
-license, image = detect_license_plate(r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_Matriculas\PXL_20210921_095129495.jpg")
+#license, image = detect_license_plate(r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_Matriculas\PXL_20210921_095129495.jpg")
 #license, image = detect_license_plate(r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_Matriculas\WhatsApp Image 2025-09-12 at 14.34.01 (1).jpeg")
-#license, image = detect_license_plate(r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_Matriculas\PXL_20210921_094938026.jpg")
+license, image = detect_license_plate(r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_Matriculas\PXL_20210921_094938026.jpg")
 
 reader = easyocr.Reader(['en'], gpu=False)  # Initialize EasyOCR reader
 for plate in license:

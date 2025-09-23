@@ -20,11 +20,11 @@ TODO:
 
 
 23/09
+- Preprocessament de les imatges i segmentació de la matricula fitlratge
 
 TODO:
-    * Operacions de fitlratge: Erosio i dilatació  (opening)
-    * Despres fer un closing (dilatacio i erosio), para que si hay huecos vacios en el numero se enganche
-    * que hi hagi regions una dintre de l'altre es pq quan faig el cv.findcontours
+   ✓ * Operacions de fitlratge: Erosio i dilatació  (opening) 
+   ✓ * Despres fer un closing (dilatacio i erosio), para que si hay huecos vacios en el numero se enganche
     * si tinc la x,y,h,a si la x o algun d'aquests es == 0, es a dir, toca el borde de la matricula, 
     eliminar este contorno porque no sera un caracter que nos interesa
     * altra opcio: en el otzu la k restarle numero pequeño

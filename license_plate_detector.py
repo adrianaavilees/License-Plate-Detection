@@ -127,15 +127,21 @@ names:
         contours, _ = cv2.findContours(preprocessed_plate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         characters = []
+        # Get shape from preprocessed image which is grayscale (2 dimensions)
+        plate_height, plate_width = preprocessed_plate.shape
         
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
             aspect_ratio = w / h
             area = cv2.contourArea(contour)
+
+            # Filter the countours that touch the border of the plate
+            # Characters should not be at the edge of the plate
+            touches_border = (x==0 or y==0 or (x+w) >= plate_width or (y+h) >= plate_height)
             
             # Heuristic filters to identify a character based on area and aspect ratio.
             # We have removed the position filter to detect the first character.
-            if area > 80 and 0.1 < aspect_ratio < 1.2 and h > 10 and w > 3: #! Aspect ratio expanded to include narrow character as 1
+            if area > 50 and 0.1 < aspect_ratio < 1.2 and h > 10 and w > 3 and not touches_border: #! Aspect ratio expanded to include narrow character as 1
                 character_roi = plate_image[y:y+h, x:x+w]
                 characters.append({'image': character_roi, 'bbox': (x, y, w, h)})
         

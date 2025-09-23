@@ -2,11 +2,11 @@ import os
 import cv2
 import torch
 from pathlib import Path
-!pip install ultralytics
+# !pip install ultralytics
 from ultralytics import YOLO
-from google.colab.patches import cv2_imshow
-from google.colab import drive
-drive.mount('/drive')
+# from google.colab.patches import cv2_imshow
+# from google.colab import drive
+# drive.mount('/drive')
 import numpy as np
 
 class LicensePlateDetector:
@@ -106,7 +106,9 @@ names:
 
         # Morphological operations to clean up
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-        binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel, iterations=1)
+        # CLOSING: fill small holes in the characters
+        binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel, iterations=3)
+        #OPENING: remove small noise, and separate connected characters
         binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel, iterations=1)
             
         return binary
@@ -133,7 +135,7 @@ names:
             
             # Heuristic filters to identify a character based on area and aspect ratio.
             # We have removed the position filter to detect the first character.
-            if area > 100 and 0.2 < aspect_ratio < 1.0 and h > 10 and w > 5:
+            if area > 80 and 0.1 < aspect_ratio < 1.2 and h > 10 and w > 3: #! Aspect ratio expanded to include narrow character as 1
                 character_roi = plate_image[y:y+h, x:x+w]
                 characters.append({'image': character_roi, 'bbox': (x, y, w, h)})
         

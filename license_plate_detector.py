@@ -5,8 +5,7 @@ from pathlib import Path
 # !pip install ultralytics
 from ultralytics import YOLO
 # from google.colab.patches import cv2_imshow
-# from google.colab import drive
-# drive.mount('/drive')
+# If running locally, use cv2.imshow 
 import numpy as np
 
 class LicensePlateDetector:
@@ -73,7 +72,8 @@ names:
     
     def show_preprocessed_image(self, image):
         """Displays the image after preprocessing steps."""
-        cv2_imshow(image)
+        # cv2_imshow(image)
+        cv2.imshow("Preprocessed Plate", image)
         
     def preprocess_plate_for_segmentation(self, plate_image):
         """
@@ -121,7 +121,7 @@ names:
         """
         preprocessed_plate = self.preprocess_plate_for_segmentation(plate_image)
         
-        print("  > Showing preprocessed (grayscale + binarized) image.")
+        print("Showing preprocessed (grayscale + binarized) image.")
         self.show_preprocessed_image(preprocessed_plate)
         
         contours, _ = cv2.findContours(preprocessed_plate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -155,7 +155,8 @@ names:
         for char_info in characters:
             x, y, w, h = char_info['bbox']
             cv2.rectangle(output_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2_imshow(output_image)
+        #cv2_imshow(output_image)
+        cv2.imshow("Segmented Characters", output_image)
 
     def process_and_show_results(self, prediction_results):
         """Processes each detected plate to segment and show the characters."""
@@ -172,35 +173,41 @@ names:
                     plate_image = image[y1:y2, x1:x2]
                     
                     if plate_image is not None and plate_image.size > 0:
-                        print(f"  > Detected License Plate {j+1}: Bbox {x1, y1, x2, y2}")
+                        print(f"Detected License Plate {j+1}: Bbox {x1, y1, x2, y2}")
                         
                         annotated_full_image = result.plot()
-                        print("  > Showing full image with detected license plate.")
-                        cv2_imshow(annotated_full_image)
+                        print("Showing full image with detected license plate.")
+                        cv2.imshow("Detected License Plate", annotated_full_image)
+                        #cv2_imshow(annotated_full_image)
 
                         characters = self.segment_characters(plate_image)
-                        print(f"  > Found {len(characters)} character candidates.")
+                        print(f"Found {len(characters)} character candidates.")
                         
                         if characters:
-                            print("  > Showing cropped plate with segmented characters.")
+                            print("Showing cropped plate with segmented characters.")
                             self.show_segmented_characters(characters, plate_image)
                         else:
-                            print("  > No characters found after segmentation.")
+                            print("No characters found after segmentation.")
                     else:
-                        print("  > Could not crop license plate. Skipping.")
+                        print("Could not crop license plate. Skipping.")
             else:
                 print(f"\n--- Processing Image {i+1} ---")
-                print("  > No license plate detected in this image.")
+                print("No license plate detected in this image.")
 
-# ================= MAIN EXECUTION =================
+#* ================= MAIN EXECUTION =================
 
-dataset_path = "/content/BD/BD_LicensePlate"
-test_dir = "/content/BD/BD_LicensePlate/images/test"
-output_dir = "/content/test_results"
+# dataset_path = "/content/BD/BD_LicensePlate"
+# test_dir = "/content/BD/BD_LicensePlate/images/test"
+# output_dir = "/content/test_results"
+
+dataset_path = r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_LicensePlate"
+test_dir = r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\BD_LicensePlate\images\test"
+output_dir = r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\test_results"
 
 detector = LicensePlateDetector()
 
-best_model_path = detector.train_model(dataset_path, epochs=10, batch=8)
+# best_model_path = detector.train_model(dataset_path, epochs=10, batch=8)
+best_model_path = r"C:\Users\adria\OneDrive - UAB\4 ENGINY\Processament Imatge i Video\Repte Matriculas\License-Plate-Detection\models\best_license_plate.pt"
 prediction_results = detector.detect_license_plate(best_model_path, test_dir, output_dir, conf=0.25)
 
 detector.process_and_show_results(prediction_results)

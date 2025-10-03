@@ -32,3 +32,8 @@ TODO:
 NEXT WEEK:
     * buscar la font de la matricula española: font2u --> para identificar el caracter
     * amb aquesta font generar imatges per fer el clasificador 
+
+03/10/2025
+Per la validació:
+   - Hem de mirar lo be que va amb les nostres matricules, si no tenim groundtruth serà més dificil. 
+   - Com només tenim 1 metode poca cosa tenim a comparar. 

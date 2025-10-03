@@ -1,0 +1,7 @@
+path: /Users/lianbaguebatlle/Desktop/Dades/Tercer/1rsemestre/PSIV2/Repte1/data
+train:
+val: 
+
+# classes
+names:
+  0: LicensePlate

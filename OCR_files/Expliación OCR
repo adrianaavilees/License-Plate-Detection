@@ -1,1 +1,47 @@
+**ESTO NO FUNCIONA DEL TODO CORRECTMANETE, LE QUIERO PREGUNTAR AL PROFE**
+def preprocess_char_for_ocr(self, char_img):
+    gray = cv2.cvtColor(char_img, cv2.COLOR_BGR2GRAY)
+    thresh = cv2.adaptiveThreshold(
+        gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY_INV, 31, 10
+    )
+    kernel = np.ones((2, 2), np.uint8)
+    thresh = cv2.dilate(thresh, kernel, iterations=1)
+    thresh = cv2.resize(thresh, (50, 50), interpolation=cv2.INTER_LINEAR)
+    return thresh
+
+esta función lo que hace es pasar a escala de grises la imagen (porque los colores no importan para el OCR), aplica la funcion de la variable thresh para tranformar la
+imagen en blanco y negro y asi poder separar el fondo del dígito. 
+**Explicacion de los parametros:
+gray: la imagen de entrada.
+
+255: valor máximo (blanco).
+
+cv2.ADAPTIVE_THRESH_GAUSSIAN_C: calcula el umbral localmente (cada bloque de píxeles tiene su propio umbral), usando una ponderación gaussiana. Esto ayuda si hay variaciones de iluminación.
+
+cv2.THRESH_BINARY_INV: invierte los colores → el texto se vuelve blanco sobre fondo negro, que es lo que Tesseract normalmente prefiere.
+
+31: tamaño del bloque (debe ser impar). Aquí se toman 31×31 píxeles para calcular el umbral local.
+
+10: valor que se resta del promedio local; sirve para ajustar la sensibilidad.
+
+Luego dilatamos la imagen para poder unir cualquier trozo que quede suelto y percibir mejor los caracteres finos como los unos, y redimensiona la imagen. 
+
+la otra funcion de ocr:
+def recognize_characters(self, characters):
+    plate_text = ""
+    config = "--psm 10 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    for char_info in characters:
+        char_img = char_info['image']
+        preprocessed = self.preprocess_char_for_ocr(char_img)
+        text = pytesseract.image_to_string(preprocessed, config=config)
+        text = "".join(filter(str.isalnum, text))
+        if text.upper() == "I": text = "1"
+        if text.upper() == "O": text = "0"
+        plate_text += text.upper()
+    return plate_text
+inicializa el motor pytesseract, luego de un diccionario de caracteres sacamos la info de cada dígito, llamamos a la funcion anterior para transformar los digitos
+y hacer el preprocesado de la imagen del digito, y la funcion image to string de pytesseract devuelve el texto que detecta de la imagen. Luego hace limpiezas y 
+condiciones para evitar que haya confusiones con algunos caracteres. Y devuelve la secuencia en teoria.
+
 

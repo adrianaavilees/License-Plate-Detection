@@ -37,3 +37,7 @@ NEXT WEEK:
 Per la validació:
    - Hem de mirar lo be que va amb les nostres matricules, si no tenim groundtruth serà més dificil. 
    - Com només tenim 1 metode poca cosa tenim a comparar. 
+
+06/10/2025
+    * Implementació OCR con tesseract --> funciona molt malament 
+    * Implementació del nostre propi OCR

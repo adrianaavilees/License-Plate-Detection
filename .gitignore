@@ -1,0 +1,5 @@
+# Ignore
+logs/
+models/dataset_chars
+dataset_chars/
+

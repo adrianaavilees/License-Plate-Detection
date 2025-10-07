@@ -40,7 +40,15 @@ Per la validació:
 
 06/10/2025
     * Implementació OCR con tesseract --> funciona molt malament 
-    * Implementació del nostre propi OCR
+    * Implementació de easyOCR:
+        - confundeix 6 -> 5
+                    M -> V
+                    M -> H
+                    7 -> 9
+                    W -> R
+                    X -> Y 
+                    imatge 27 molt malament (renault)
+                    6 -> 8
 
 
 

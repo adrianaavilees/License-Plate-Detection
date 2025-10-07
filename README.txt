@@ -41,3 +41,12 @@ Per la validació:
 06/10/2025
     * Implementació OCR con tesseract --> funciona molt malament 
     * Implementació del nostre propi OCR
+
+
+
+ASPECTES IMPORTANTS PRESENTACIÓ:
+* Quedi clar les diferents etapes, primer localització, detecció, segmentació...
+* Hem intentat X, no funcionaven, ho hem canviat per X... (tesseract per OCR no funciona be)
+* Añadir la validación con boxplots, matriu de confusió, ver porque fallan las cosas. WER i CER 
+* VALIDACIÓ PER CADA ETAPA
+* HACER VALIDACIO PER CARACTERS, DE 200 M'HA DETECTAT BE 190 EXEMPLE

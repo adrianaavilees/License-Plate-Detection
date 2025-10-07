@@ -1,0 +1,52 @@
+#lectura de la placa con el ocr
+
+#TRANSFORMACIONES DE LA IMAGEN PARA MEJORAR LA LECTURA  DEL OCR
+
+# Cargamos la imagen, y la convertimos a escala de grises.
+gray = cv2.cvtColor(cropped_image_matricula, cv2.COLOR_BGR2GRAY)
+
+# Algunas transformaciones de la imagen, para para mejorar la lectura del OCR
+# pero no fue necesario, ya que distorcionaba mucho la lectura del OCR
+# Aplicamos thresholding automático con el algoritmo de Otsu. ESto hará que el texto se vea blanco, y los elementos
+# del fondo sean menos prominentes.
+#thresholded = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+
+
+# Calculamos y normalizamos la transformada de distancia.
+#dist = cv2.distanceTransform(thresholded, cv2.DIST_L2, 5)
+#dist = cv2.normalize(dist, dist, 0, 1.0, cv2.NORM_MINMAX)
+#dist = (dist * 255).astype('uint8')
+
+# Aplicamos thresholding al resultado de la operación anterior, y mostramos el resultado en pantalla.
+#dist = cv2.threshold(dist, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+
+
+#Cambiar directorio donde esta instalado tesseract
+pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
+
+#Pasa el OCR por la imagen en escala de grises y filtra solo numero y letras
+data = pytesseract.image_to_string(gray, lang='eng', config='--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYXabcdefghijklmnopqrstuvwxyz')
+
+#Limpieza de la cadena de salida del OCR
+valor_medio = round(len(data)/2)
+data = data[valor_medio-3:valor_medio+4]
+print("Matricula Detectada:",data)
+
+sv.plot_image(gray)
+
+  #PARA AGREGAR LA MATRICULA EN LA IMAGEN
+#Definir el texto a añadir
+text = "Matricula: "+data
+#Definir la posición del texto
+position = (300, 90)  # Puedes ajustar la posición según necesites
+#Definir la fuente, tamaño, color, grosor
+font = cv2.FONT_HERSHEY_SIMPLEX
+font_scale = 1
+font_color = (255, 255, 255)  # Blanco en BGR
+font_thickness = 2
+#Añadir el texto a la imagen
+annotated_image_p = cv2.putText(annotated_image_p, text, position, font, font_scale, font_color, font_thickness)
+
+utiliza parte de la función que hice yo, tengo q combiarlas y ver su practicidad
+
+sv.plot_image(annotated_image_p)

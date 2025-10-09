@@ -1,6 +1,5 @@
 # Ignore
 logs/
-models/dataset_chars
-dataset_chars/
-
+BD_LicensePlate/
+test_results/
 

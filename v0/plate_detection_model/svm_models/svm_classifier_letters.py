@@ -13,13 +13,12 @@ DATASET_DIR = "/Users/lianbaguebatlle/Desktop/Dades/Tercer/1rsemestre/PSIV2/Proj
 data = []
 labels = []
 
-# Load each image and extract label from filename
 for f in os.listdir(DATASET_DIR):
     if f.endswith(".png"):
         img_path = os.path.join(DATASET_DIR, f)
         img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-        img = cv2.resize(img, (32, 32)).flatten() / 255.0  # same preprocessing
-        label = f.split("_")[0].upper()  # 'b_001.jpg' -> 'B'
+        img = cv2.resize(img, (32, 32)).flatten() / 255.0  
+        label = f.split("_")[0].upper()  
         data.append(img)
         labels.append(label)
 
@@ -31,18 +30,18 @@ y = np.array(labels)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 
-# ✅ Train SVM
+# Entrenar SVM
 clf = svm.SVC(kernel='linear', probability=True)
 clf.fit(X_train, y_train)
 
-# ✅ Evaluate
+# Evaluar
 y_pred = clf.predict(X_test)
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print("\nClassification report:\n", classification_report(y_test, y_pred))
 
-# ✅ Save trained model
+# Guardar modelo entrenado
 joblib.dump(clf, "svm_letters.pkl")
-print("✅ Model saved as svm_letters.pkl")
+print(" Model saved as svm_letters.pkl")
 
 
 clf = joblib.load("svm_letters.pkl")

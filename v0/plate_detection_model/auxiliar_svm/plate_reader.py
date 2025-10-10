@@ -21,7 +21,7 @@ class PlateReader:
     def predict_plate(self, image_path, save_dir=None):  
         results, crop = self.predictor.predict_and_crop_image(image_path, conf=0.40, save_dir=save_dir)
         if crop is None:
-            print("❌ No se pudo detectar ninguna matrícula en la imagen.")
+            print("No se ha detectado matricula.")
             return None
 
         base_name = os.path.splitext(os.path.basename(image_path))[0]
@@ -30,7 +30,7 @@ class PlateReader:
 
         crop_path = os.path.join(image_save_dir, f"{base_name}_plate.jpg")
         cv2.imwrite(crop_path, crop)
-        print(f"✅ Matrícula recortada guardada en {crop_path}")
+        print(f" Matrícula recortada guardada en {crop_path}")
 
         segmentator = Segmentator(crop)
         numbers, letters = segmentator.segment_characters()
@@ -55,7 +55,7 @@ class PlateReader:
             cv2.imwrite(os.path.join(image_save_dir, f"let_{i}_{pred}.jpg"), img)
 
         plate_str = "".join(predicted_numbers + predicted_letters)
-        print(f"✅ Matrícula predicha: {plate_str}")
+        print(f"Matrícula predicha: {plate_str}")
 
         with open(os.path.join(image_save_dir, "prediction.txt"), "w") as f:
             f.write(f"Predicción: {plate_str}\n")

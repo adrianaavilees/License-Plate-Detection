@@ -7,11 +7,9 @@ import shutil
 
 class PlatePredictor:
     def __init__(self, model_path: str):
-        """Carga el modelo entrenado (best.pt)"""
         self.model = YOLO(model_path)
 
     def predict_and_crop_folder(self, folder_path: str, conf: float = 0.25, save_dir: str = "crops"):
-        """Predice todas las imágenes de una carpeta y guarda recortes"""
         results = self.model.predict(
             source=folder_path,
             save=True,
@@ -41,11 +39,6 @@ class PlatePredictor:
         crop = None
 
         os.makedirs(save_dir, exist_ok=True)
-        """
-        if os.path.exists(save_dir):
-            shutil.rmtree(save_dir)
-        os.makedirs(save_dir)
-        """
 
         results = self.model.predict(
             source=image_path,

@@ -6,16 +6,16 @@ import cv2
 import os
 import joblib
 
+
 # Path to your dataset folder
-# DATASET_DIR = "Crops_letters"
-DATASET_DIR = "/Users/lianbaguebatlle/Desktop/Dades/Tercer/1rsemestre/PSIV2/Projecte1/License-Plate-Detection/Crops_letters"
+DATASET_DIR = "/Users/lianbaguebatlle/Desktop/Dades/Tercer/1rsemestre/PSIV2/Projecte1/License-Plate-Detection/Augmented_Letters"
 
 data = []
 labels = []
 
-# ✅ Load each image and extract label from filename
+# Load each image and extract label from filename
 for f in os.listdir(DATASET_DIR):
-    if f.endswith(".jpg"):
+    if f.endswith(".png"):
         img_path = os.path.join(DATASET_DIR, f)
         img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
         img = cv2.resize(img, (32, 32)).flatten() / 255.0  # same preprocessing

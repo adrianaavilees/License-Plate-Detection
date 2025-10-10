@@ -9,10 +9,11 @@ import joblib
 data = []
 labels = []
 
-DATASET_DIR = "/Users/lianbaguebatlle/Desktop/Dades/Tercer/1rsemestre/PSIV2/Projecte1/License-Plate-Detection/Crops_numbers"
+
+DATASET_DIR = "/Users/lianbaguebatlle/Desktop/Dades/Tercer/1rsemestre/PSIV2/Projecte1/License-Plate-Detection/Augmented_Numbers"
 
 for f in os.listdir(DATASET_DIR):
-    if f.endswith(".jpg"):
+    if f.endswith(".png"):
         img = cv2.imread(os.path.join(DATASET_DIR, f), cv2.IMREAD_GRAYSCALE)
         #img = cv2.imread(os.path.join("Crops_numbers", f), cv2.IMREAD_GRAYSCALE)
         img = cv2.resize(img, (32, 32)).flatten() / 255.0

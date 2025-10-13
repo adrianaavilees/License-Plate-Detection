@@ -42,18 +42,14 @@ La implementació del model es pot dividir en 3 etapes diferenciades, la localit
 	1. Preparació i anàlisi de dades
 	S'ha fet una recollida d'imatges amb matrícules (BD de Kaggle per l'entrenament i imatges pròpies pels tests)
 
-
-
 	2. Detecció d’àrees de matrícula
 	L’objectiu d’aquesta fase és localitzar la posició de les matrícules dins una imatge, és a dir, detectar on es troba la matrícula.
 	
-	Per aquesta tasca s’ha utilitzat YOLOv8, un algoritme de detecció d’objectes en imatges basat en xarxes neuronals convolucionals. Concretament s’ha decidit utilitzar com a punt de 	partida el model preentrenat yolov8s.pt, la versió petita de YOLOv8, i posteriorment s’ha reentrenat amb un dataset propi annotat específicament per la detecció de matrícules. 		yolov8n.pt
+	Per aquesta tasca s’ha utilitzat YOLOv8, un algoritme d'Aprenentatge Profund de detecció d’objectes en imatges basat en xarxes neuronals convolucionals. Concretament s’ha decidit utilitzar com a punt de 	partida el model preentrenat yolov8s.pt, la versió petita de YOLOv8, i posteriorment s’ha reentrenat amb un dataset propi annotat específicament per la detecció de matrícules. 
 	
-	Per entrenar el model s’ha utilitzat un dataset 4000 matrícules ja annotat, obtingut de Kaggle. Aquest dataset consta d’imatges de cotxes de tots els països, no només Espanya. No 		obstant, això no ha estat un problema, ja que en aquesta part tan sols interessava la detecció de les matrícules, no la lectura, i les característiques visuals d’aquestes son 			similars a nivell internacional.
+	Per entrenar el model s’ha utilitzat un dataset 4000 matrícules ja annotat, obtingut de Kaggle. Aquest dataset consta d’imatges de cotxes de tots els països, no només Espanya. No obstant, això no ha estat un problema, ja que en aquesta part tan sols interessava la detecció de les matrícules, no la lectura, i les característiques visuals d’aquestes son similars a nivell internacional.
 	
 	Els models entrenats s’han guardat en fitxers de format <nom_del_fitxer>.pt. Es poden trobar en el codi dins la carpeta models/ (best.pt, best_license_plate.pt)
-
-
 
 	3. Segmentació de caràcters
 	Un cop la matrícula ha estat aillada, l'objectiu es transformar la imatge en una versió binària neta que faciliti l'aillament i posterior reconeixement de caràcters. 
@@ -64,12 +60,11 @@ La implementació del model es pot dividir en 3 etapes diferenciades, la localit
 	            - Un cop obtinguda la imatge binaritzada, es realitza la segmentació dels caràcters utilitzant la funció findContours d’OpenCV, 
 	              que permet identificar contorns tancats com a possibles candidats a caràcters.
 	        
-	També es van provar tècniques com closing i opening per omplir forats interns dels caràcters. Tot i això, durant la fase de test es va comprovar que introduïen distorsions i 			reduïen la precisió del reconeixement, motiu pel qual finalment es van descartar.
+	També es van provar tècniques com closing i opening per omplir forats interns dels caràcters. Tot i això, durant la fase de test es va comprovar que introduïen distorsions i reduïen la precisió del reconeixement, motiu pel qual finalment es van descartar.
 	
 	Per millorar la fiabilitat d’aquesta detecció, s’apliquen diverses heurístiques de filtratge:
-	
 	            - Filtratge per àrea i alçada mínima: per eliminar petites taques o elements no desitjats.
-	            - Filtratge per ràtio d’aspecte: per assegurar-se que els contorns detectats s’ajusten a la forma típica d’un caràcter.
+	            - Filtratge per ràtio d’aspecte: per assegurar-se que els contorns detectats s’ajusten a la forma típica d’un caràcter i eliminar així elements de la matrícula que no es desitjen pel reconeixement.
 	            - Comprovació de posició: es descarten els contorns que toquin la vora de la matrícula, per evitar confondre marcs o elements externs amb caràcters.
 
 
@@ -189,20 +184,19 @@ ESTRUCTURA DEL CODI
     ├── segmentator.py	# Classe Segmentator amb la funció segment_characters() que retorna els numeros i caràcters segmentats
     ├── plate_reader.py	# Classe PlateReader amb la funció predict_plate() que donada una imatge retorna la predicció del valor de la matrícula
        	/svm_models/
-    ├── svm_classifier_letters.py	# 
-    ├── svm_classifier_numbers.py # 
+    ├── svm_classifier_letters.py	# Codi que entrena el model de SVM per reconeixer lletres i el guarda al fitxer svm_letters.pkl 
+    ├── svm_classifier_numbers.py # Codi que entrena el model SVM per reconeixer números i el guarda al fitxer svm_digits.pkl
     ├── svm_digits.pkl	# model svm entrenat per classificar les lletres
     ├── svm_letters.pkl	# model svm entrenat per classificar els numeros
     ├── svm_main.py	# Script principal per provar el reconeixement
 /OCR/
- ├── ground_truth.json		#..........................................................................
- ├── ocr_final_version.py	#..........................................................................
- ├── license_plate_detector.py	#..........................................................................
- ├── main.ipynb	#..........................................................................
- ├── main_validation.ipynb	#..........................................................................
- ├── ocr_evaluation_results.csv #..........................................................................
- ├── segmentation.py	#..........................................................................
-
+ ├── ground_truth.json		# Arxiu JSON que vincula cada imatge amb la seva matrícula per tal de saber quin és el resultat esperat. 
+ ├── REPTE_MATRICULES_VERSIO_FINAL.ipynb	# Conté la verdsió definitiva i final de les funcions (ja netes) per fer el reconeixement de la matrícula juntament amb la validació del model. 
+ ├── license_plate_detector.py	# Classe LicensePlateDetector que agrupa totes les funcions per detectar, segmentar i reconéixer la matrícula. 
+ ├── main.ipynb	# Conté la funció principal de detecció, segmentació i reconeixement.
+ ├── main_validation.ipynb	# Conté la funció principal de detecció, segmentació i reconeixement, incloint-hi tota la part de validació del model. 
+ ├── ocr_evaluation_results.csv # Fitxer CSV que conté els resultats del procés de reconeixement en quant a la matrícula que figura al ground truth i la predicció del model entrenat. 
+ ├── segmentation.py	# Classe LicensePlateDetector que agrupa totes les funcions per detectar, segmentar i reconéixer la matrícula (amb algunes petites variacions)
 
 
 

@@ -1,6 +1,7 @@
 ### GRUP 3 - REPTE MATRICULES ###
 Adriana, Paula, Lian i Martina
 
+
 DESCRIPCIÓ DEL PROJECTE
 
 El projecte té com a objectiu crear un sistema de Reconeixement Automàtic de Matrícules per detectar i llegir matrícules de vehicles, pensat per poder ser utilitzat pel control d’entrada/sortida de vehicles en parkings.
@@ -32,49 +33,86 @@ OCR:
 
 
 
+
 DESENVOLUPAMENT TÈCNIC
 
+La implementació del model es pot dividir en 3 etapes diferenciades, la localització de la matrícula, la segmentació dels caràcters, i el reconeixement d’aquests.
 
-FASES DEL PROJECTE
-    * Preparació i anàlisi de dades: recollida d’imatges amb matrícules (BD de kaggle per l'entrenament i imatges nostres pel tets).
-    
-    * Detecció d’àrees de matrícula: entrenament d’un model YOLO preentrenat per identificar les zones de la matrícula dins cada imatge.
-    
-    * Preprocessament i segmentació: un cop la matrícula ha estat aillada, l'objectiu es transformar la imatge en una versió binària neta que
-    faciliti l'aillament i posterior reconeixement de caràcters. 
-            - Convertim la imatge RGB a escala HSV per neutralitzar els efectes del color i eliminar la banda blava europea.
-            - S'aplica un filtre gaussià per suavitzar la imatge i reduir sorolls petits (ombres, taques, reflexos) sense deformar la forma dels caracters. 
-            - S'utiliza el threshold OTSU, que calcula automàticament el llindar optim per a cada imatge i ens permet obtenir millor resultats per binaritzar la imatge. 
-            - Invertim la imatge binària perque els caracters siguin blancs i el fons negre. 
-            - Un cop obtinguda la imatge binaritzada, es realitza la segmentació dels caràcters utilitzant la funció findContours d’OpenCV, 
-              que permet identificar contorns tancats com a possibles candidats a caràcters.
-        
-        També es van provar tècniques com closing i opening per omplir forats interns dels caràcters. Tot i això, durant la fase de test es va comprovar que 
-        introduïen distorsions i reduïen la precisió del reconeixement, motiu pel qual finalment es van descartar.
+	1. Preparació i anàlisi de dades
+	S'ha fet una recollida d'imatges amb matrícules (BD de Kaggle per l'entrenament i imatges pròpies pels tests)
 
-        Per millorar la fiabilitat d’aquesta detecció, s’apliquen diverses heurístiques de filtratge:
+	2. Detecció d’àrees de matrícula
 
-            - Filtratge per àrea i alçada mínima: per eliminar petites taques o elements no desitjats.
-            - Filtratge per ràtio d’aspecte: per assegurar-se que els contorns detectats s’ajusten a la forma típica d’un caràcter.
-            - Comprovació de posició: es descarten els contorns que toquin la vora de la matrícula, per evitar confondre marcs o elements externs amb caràcters.
-    
-    * Reconeixement del text (OCR): aplicació d’EasyOCR per extreure els caràcters detectats.
-    
-    * Correcció i validació: implementació de funcions per corregir errors i validar el format final del text reconegut.
-        Per millorar la precisió, s’apliquen correccions automàtiques basades en confusions habituals entre lletres i números 
-        (per exemple, confondre “O” amb “0” o “I” amb “1”), i es comprova la coherència amb el format habitual de les matrícules espanyoles.
-    
-    * Avaluació dels resultats: ús de mètriques (WER/CER o la matriu de confusió) per quantificar el rendiment del sistema.
-    
-    * Visualització i anàlisi final: representació gràfica dels resultats i anàlisi d’errors per identificar possibles millores.
+	L’objectiu d’aquesta fase és localitzar la posició de les matrícules dins una imatge, és a dir, detectar on es troba la matrícula.
+	
+	Per aquesta tasca s’ha utilitzat YOLOv8, un algoritme de detecció d’objectes en imatges basat en xarxes neuronals convolucionals. Concretament s’ha decidit utilitzar com a punt de partida el model preentrenat yolov8s.pt, la versió petita de YOLOv8, i posteriorment s’ha reentrenat amb un dataset propi annotat específicament per la detecció de matrícules. yolov8n.pt
+	
+	Per entrenar el model s’ha utilitzat un dataset 4000 matrícules ja annotat, obtingut de Kaggle. Aquest dataset consta d’imatges de cotxes de tots els països, no només Espanya. No obstant, això no ha estat un problema, ja que en aquesta part tan sols interessava la detecció de les matrícules, no la lectura, i les característiques visuals d’aquestes son similars a nivell internacional.
+	
+	Els models entrenats s’han guardat en fitxers de format <nom_del_fitxer>.pt. Es poden trobar en el codi dins la carpeta models/ (best.pt, best_license_plate.pt)
 
 
-S’ha escollit aquest enfocament modular (detecció + OCR) perquè permet aprofitar els punts forts de cadascuna de les tecnologies. 
-YOLO és molt eficient en la detecció d’objectes amb diferents mides i orientacions, mentre que EasyOCR és flexible i senzill d’integrar 
-per al reconeixement de text.
+	3. Segmentació de caràcters
+
+	Un cop la matrícula ha estat aillada, l'objectiu es transformar la imatge en una versió binària neta que faciliti l'aillament i posterior reconeixement de caràcters. 
+	            - Convertim la imatge RGB a escala HSV per neutralitzar els efectes del color i eliminar la banda blava europea.
+	            - S'aplica un filtre gaussià per suavitzar la imatge i reduir sorolls petits (ombres, taques, reflexos) sense deformar la forma dels caracters. 
+	            - S'utiliza el threshold OTSU, que calcula automàticament el llindar optim per a cada imatge i ens permet obtenir millor resultats per binaritzar la imatge. 
+	            - Invertim la imatge binària perque els caracters siguin blancs i el fons negre. 
+	            - Un cop obtinguda la imatge binaritzada, es realitza la segmentació dels caràcters utilitzant la funció findContours d’OpenCV, 
+	              que permet identificar contorns tancats com a possibles candidats a caràcters.
+	        
+	També es van provar tècniques com closing i opening per omplir forats interns dels caràcters. Tot i això, durant la fase de test es va comprovar que introduïen distorsions i reduïen la precisió del reconeixement, motiu pel qual finalment es van descartar.
+	
+	Per millorar la fiabilitat d’aquesta detecció, s’apliquen diverses heurístiques de filtratge:
+	
+	            - Filtratge per àrea i alçada mínima: per eliminar petites taques o elements no desitjats.
+	            - Filtratge per ràtio d’aspecte: per assegurar-se que els contorns detectats s’ajusten a la forma típica d’un caràcter.
+	            - Comprovació de posició: es descarten els contorns que toquin la vora de la matrícula, per evitar confondre marcs o elements externs amb caràcters.
+
+
+	4. Reconeixement de caràcters
+	En aquesta fase s’han implementat dues aproximacions diferents per comparar rendiment i flexibilitat: una basada en SVM i una altra basada en OCR (EasyOCR).
+	
+		* SVM (Support Vector Machine)
+		Per aquesta solució s’han entrenat classificadors SVM (Support Vector Machine) independents per als números i per a les lletres. 
+		
+		Els models s’han creat amb dos conjunts de dades separats:
+			* Un per als números (0-9)
+			* Un altre per a les lletres (BCDFGHJKLMNPQRSTVWXYZ)
+	
+		Aquests conjunts de dades utilitzats han estat datasets propis. El procés de generació d’aquests conjunts de dades s’ha realitzat seguint el següent procés:
+		1. En primer lloc s’han fet fotos reals de matrícules de varis vehicles.
+		2. Seguidament s’ha utilitzat el model yolov8 entrenat prèviament a la fase de detecció, per extreure automàticament el retall de la matrícula dins de cada imatge.
+		3. Sobre cada retall, s’ha aplicat l’algoritme de segmentació desenvolupat, que retorna els caràcters (numeros, lletres)
+		4. Aquests retalls obtinguts s’han annotat manualment, assignant a cada imatge el nom corresponent al caràcter que representa.
+		5. Finalment, s’han aplicat tècniques de data augmentation per augmentar la quantitat d’exemples i millorar la robustesa del model.
+	
+	
+		* Reconeixement amb OCR (EasyOCR)
+		Aplicació d'EasyOCR per extreure els caràcters detectats.
+		S’ha escollit aquest enfocament modular (detecció + OCR) perquè permet aprofitar els punts forts de cadascuna de les tecnologies. 
+		YOLO és molt eficient en la detecció d’objectes amb diferents mides i orientacions, mentre que EasyOCR és flexible i senzill d’integrar 
+		per al reconeixement de text.
+
+    
+	5. Correcció i validació
+	Implementació de funcions per corregir errors i validar el format final del text reconegut.
+	Per millorar la precisió, s’apliquen correccions automàtiques basades en confusions habituals entre lletres i números 
+	(per exemple, confondre “O” amb “0” o “I” amb “1”), i es comprova la coherència amb el format habitual de les matrícules espanyoles.
+	    
+	6. Avaluació dels resultats
+	S'han utilitzat mètriques (WER/CER o la matriu de confusió) per quantificar el rendiment del sistema.
+    
+	7. Visualització i anàlisi final
+	S'ha realitzat una representació gràfica dels resultats i anàlisi d’errors per identificar possibles millores.
+
+
+
 
 
 ##################################################################################################################################################################
+
 
 DIARI DE DESENVOLUPAMENT
 

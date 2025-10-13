@@ -3,3 +3,7 @@ logs/
 BD_LicensePlate/
 test_results/
 
+.DS_Store
+Crops/
+__pycache__/
+runs/

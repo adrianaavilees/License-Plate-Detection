@@ -1,8 +1,0 @@
-path: /content/drive/MyDrive/Dades/Tercer/1rsemestre/PSIV # path absoluto a la carpeta del proyecto
-train: images/train # path relativo a las imagenes de train 
-val: images/valid # "     "     "     "  imagenes de validacion 
-test: images/test # "     "     "     "  imagenes de test
-
-# clases
-names:
-  0: License-Plate

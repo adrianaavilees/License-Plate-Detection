@@ -1,14 +1,39 @@
 ### GRUP 3 - REPTE MATRICULES ###
 Adriana, Paula, Lian i Martina
 
-Aquest projecte té com a finalitat desenvolupar un sistema capaç de detectar i reconèixer automàticament 
-les matrícules de vehicles a partir d'imatges. 
+DESCRIPCIÓ DEL PROJECTE
 
-DESCRIPCIÓ GENERAL
+El projecte té com a objectiu crear un sistema de Reconeixement Automàtic de Matrícules per detectar i llegir matrícules de vehicles, pensat per poder ser utilitzat pel control d’entrada/sortida de vehicles en parkings.
+
+En aquest projecte ens hem centrat en matrícules espanyoles amb el sistema actual amb format XXXX YYY (sent XXXX un nombre sequencial de 4 xifres i YYY tres lletres consonants).
+
 El sistema es basa en tres etapes principals:
     1. Detecció de la matricula: es fa servir un model de detecció d'objectes YOLOv8 per localitzar la regió de la matrícula dins la imatge. 
     2. Preprocessament i segmentació: es fan servir tècniques de processament de imatge per tractar la imatge, eliminar el soroll i segmentar-la.
     3. Reconeixement de caràcters: s'utilitza EasyOCR per llegir els caràcters i convertir-los en text. 
+
+
+
+
+GUIA D'EXECUCIÓ
+
+SVM: Per tal de testejar el model de SVM, modificar les configuració del fitxer svm_main.py i executar-lo. Això permetrà fer prediccions per un conjunt d’imatges de vehicles.
+
+Cal modificar les següents rutes:
+IMAGE_DIR: Ruta a la carpeta que conté les imatges de vehicles dels quals es vol llegir la matrícula.
+SAVE_DIR: Ruta al directori on es volen guardar els resultats i les prediccions (retall de la imatge on es detecta la matrícula, caràcters segmentats i predicció final)
+MODEL_PATH: Ruta al model de localització de matrícules que es vol utilitzar.
+SVM_DIGITS: Ruta al model de clasificació de nombres que es vol utilitzar per predir els primers 4 caràcters de la matrícula.
+SVM_LETTERS: Ruta al model de clasificació de lletres que es vol utilitzar per predir els darrers 3 caràcters de la matrícula.
+
+
+OCR:
+
+
+
+
+DESENVOLUPAMENT TÈCNIC
+
 
 FASES DEL PROJECTE
     * Preparació i anàlisi de dades: recollida d’imatges amb matrícules (BD de kaggle per l'entrenament i imatges nostres pel tets).
@@ -50,6 +75,8 @@ per al reconeixement de text.
 
 
 ##################################################################################################################################################################
+
+DIARI DE DESENVOLUPAMENT
 
 16/09/2025
 - Detecció de matricules en segons que imatge aconseguit.
@@ -101,6 +128,38 @@ Per la validació:
                     X -> Y 
                     imatge 27 molt malament (renault)
                     6 -> 8
+
+
+
+
+ESTRUCTURA DEL CODI
+
+/models/
+ ├── best.pt                      # Model yolov8 reentrenat per la detecció de matrícules versió 0
+ ├── best_license_plate.pt  # Model yolov8 reentrenat per la detecció de matrícules versió 1
+/v0/SVM/
+	/auxiliar_svm/
+    ├── cropper.py	# Classe PlatePredictor amb la funció predict_and_crop_image() que localitza la matrícula
+    ├── segmentator.py	# Classe Segmentator amb la funció segment_characters() que retorna els numeros i caràcters segmentats
+    ├── plate_reader.py	# Classe PlateReader amb la funció predict_plate() que donada una imatge retorna la predicció del valor de la matrícula
+       	/svm_models/
+    ├── svm_classifier_letters.py	# 
+    ├── svm_classifier_numbers.py # 
+    ├── svm_digits.pkl	# model svm entrenat per classificar les lletres
+    ├── svm_letters.pkl	# model svm entrenat per classificar els numeros
+    ├── svm_main.py	# Script principal per provar el reconeixement
+/OCR/
+ ├── ground_truth.json		#..........................................................................
+ ├── ocr_final_version.py	#..........................................................................
+ ├── license_plate_detector.py	#..........................................................................
+ ├── main.ipynb	#..........................................................................
+ ├── main_validation.ipynb	#..........................................................................
+ ├── ocr_evaluation_results.csv #..........................................................................
+ ├── segmentation.py	#..........................................................................
+
+
+
+
 
 
 

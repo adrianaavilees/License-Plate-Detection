@@ -47,9 +47,9 @@ La implementació del model es pot dividir en 3 etapes diferenciades, la localit
 	2. Detecció d’àrees de matrícula
 	L’objectiu d’aquesta fase és localitzar la posició de les matrícules dins una imatge, és a dir, detectar on es troba la matrícula.
 	
-	Per aquesta tasca s’ha utilitzat YOLOv8, un algoritme de detecció d’objectes en imatges basat en xarxes neuronals convolucionals. Concretament s’ha decidit utilitzar com a punt de partida el model preentrenat yolov8s.pt, la versió petita de YOLOv8, i posteriorment s’ha reentrenat amb un dataset propi annotat específicament per la detecció de matrícules. yolov8n.pt
+	Per aquesta tasca s’ha utilitzat YOLOv8, un algoritme de detecció d’objectes en imatges basat en xarxes neuronals convolucionals. Concretament s’ha decidit utilitzar com a punt de 	partida el model preentrenat yolov8s.pt, la versió petita de YOLOv8, i posteriorment s’ha reentrenat amb un dataset propi annotat específicament per la detecció de matrícules. 		yolov8n.pt
 	
-	Per entrenar el model s’ha utilitzat un dataset 4000 matrícules ja annotat, obtingut de Kaggle. Aquest dataset consta d’imatges de cotxes de tots els països, no només Espanya. No obstant, això no ha estat un problema, ja que en aquesta part tan sols interessava la detecció de les matrícules, no la lectura, i les característiques visuals d’aquestes son similars a nivell internacional.
+	Per entrenar el model s’ha utilitzat un dataset 4000 matrícules ja annotat, obtingut de Kaggle. Aquest dataset consta d’imatges de cotxes de tots els països, no només Espanya. No 		obstant, això no ha estat un problema, ja que en aquesta part tan sols interessava la detecció de les matrícules, no la lectura, i les característiques visuals d’aquestes son 			similars a nivell internacional.
 	
 	Els models entrenats s’han guardat en fitxers de format <nom_del_fitxer>.pt. Es poden trobar en el codi dins la carpeta models/ (best.pt, best_license_plate.pt)
 
@@ -64,7 +64,7 @@ La implementació del model es pot dividir en 3 etapes diferenciades, la localit
 	            - Un cop obtinguda la imatge binaritzada, es realitza la segmentació dels caràcters utilitzant la funció findContours d’OpenCV, 
 	              que permet identificar contorns tancats com a possibles candidats a caràcters.
 	        
-	També es van provar tècniques com closing i opening per omplir forats interns dels caràcters. Tot i això, durant la fase de test es va comprovar que introduïen distorsions i reduïen la precisió del reconeixement, motiu pel qual finalment es van descartar.
+	També es van provar tècniques com closing i opening per omplir forats interns dels caràcters. Tot i això, durant la fase de test es va comprovar que introduïen distorsions i 			reduïen la precisió del reconeixement, motiu pel qual finalment es van descartar.
 	
 	Per millorar la fiabilitat d’aquesta detecció, s’apliquen diverses heurístiques de filtratge:
 	
@@ -76,8 +76,17 @@ La implementació del model es pot dividir en 3 etapes diferenciades, la localit
 
 	4. Reconeixement de caràcters
 	En aquesta fase s’han implementat dues aproximacions diferents per comparar rendiment i flexibilitat: una basada en SVM i una altra basada en OCR (EasyOCR).
-	
-		* SVM (Support Vector Machine)
+
+
+		(1) Reconeixement amb OCR (EasyOCR)
+		Aplicació d'EasyOCR per extreure els caràcters detectats.
+		S’ha escollit aquest enfocament modular (detecció + OCR) perquè permet aprofitar els punts forts de cadascuna de les tecnologies. 
+		YOLO és molt eficient en la detecció d’objectes amb diferents mides i orientacions, mentre que EasyOCR és flexible i senzill d’integrar 
+		per al reconeixement de text.
+
+
+
+		(2) SVM (Support Vector Machine)
 		Per aquesta solució s’han entrenat classificadors SVM (Support Vector Machine) independents per als números i per a les lletres. 
 		
 		Els models s’han creat amb dos conjunts de dades separats:
@@ -90,13 +99,6 @@ La implementació del model es pot dividir en 3 etapes diferenciades, la localit
 			3. Sobre cada retall, s’ha aplicat l’algoritme de segmentació desenvolupat, que retorna els caràcters (numeros, lletres)
 			4. Aquests retalls obtinguts s’han annotat manualment, assignant a cada imatge el nom corresponent al caràcter que representa.
 			5. Finalment, s’han aplicat tècniques de data augmentation per augmentar la quantitat d’exemples i millorar la robustesa del model.
-		
-	
-		* Reconeixement amb OCR (EasyOCR)
-		Aplicació d'EasyOCR per extreure els caràcters detectats.
-		S’ha escollit aquest enfocament modular (detecció + OCR) perquè permet aprofitar els punts forts de cadascuna de les tecnologies. 
-		YOLO és molt eficient en la detecció d’objectes amb diferents mides i orientacions, mentre que EasyOCR és flexible i senzill d’integrar 
-		per al reconeixement de text.
 
 
 

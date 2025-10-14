@@ -169,8 +169,13 @@ Per la validació:
                     X -> Y 
                     imatge 27 molt malament (renault)
                     6 -> 8
-
-
+07/10/2025
+	ASPECTES IMPORTANTS PER LA PRESENTACIÓ:
+		* Quedi clar les diferents etapes, primer localització, detecció, segmentació...
+		* Hem intentat X, no funcionaven, ho hem canviat per X... (tesseract per OCR no funciona be)
+		* Añadir la validación con boxplots, matriu de confusió, ver porque fallan las cosas. WER i CER 
+		* VALIDACIÓ PER CADA ETAPA
+		* HACER VALIDACIO PER CARACTERS, DE 200 M'HA DETECTAT BE 190 EXEMPLE
 
 
 ESTRUCTURA DEL CODI
@@ -198,14 +203,3 @@ ESTRUCTURA DEL CODI
  ├── ocr_evaluation_results.csv # Fitxer CSV que conté els resultats del procés de reconeixement en quant a la matrícula que figura al ground truth i la predicció del model entrenat. 
  ├── segmentation.py	# Classe LicensePlateDetector que agrupa totes les funcions per detectar, segmentar i reconéixer la matrícula (amb algunes petites variacions)
 
-
-
-
-
-
-ASPECTES IMPORTANTS PRESENTACIÓ:
-* Quedi clar les diferents etapes, primer localització, detecció, segmentació...
-* Hem intentat X, no funcionaven, ho hem canviat per X... (tesseract per OCR no funciona be)
-* Añadir la validación con boxplots, matriu de confusió, ver porque fallan las cosas. WER i CER 
-* VALIDACIÓ PER CADA ETAPA
-* HACER VALIDACIO PER CARACTERS, DE 200 M'HA DETECTAT BE 190 EXEMPLE

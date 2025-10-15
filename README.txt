@@ -1,4 +1,4 @@
-## GRUP 3 - REPTE MATRICULES
+# GRUP 3 - REPTE MATRICULES
 Adriana, Paula, Lian i Martina
 
 

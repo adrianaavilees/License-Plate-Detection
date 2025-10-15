@@ -1,8 +1,8 @@
-### GRUP 3 - REPTE MATRICULES ###
+## GRUP 3 - REPTE MATRICULES
 Adriana, Paula, Lian i Martina
 
 
-DESCRIPCIÓ DEL PROJECTE
+# DESCRIPCIÓ DEL PROJECTE
 
 El projecte té com a objectiu crear un sistema de Reconeixement Automàtic de Matrícules per detectar i llegir matrícules de vehicles, pensat per poder ser utilitzat pel control d’entrada/sortida de vehicles en parkings.
 
@@ -16,7 +16,7 @@ El sistema es basa en tres etapes principals:
 
 
 
-GUIA D'EXECUCIÓ
+# GUIA D'EXECUCIÓ
 
 SVM: Per tal de testejar el model de SVM, modificar les configuració del fitxer svm_main.py i executar-lo. Això permetrà fer prediccions per un conjunt d’imatges de vehicles.
 
@@ -34,7 +34,7 @@ OCR:
 
 
 
-DESENVOLUPAMENT TÈCNIC
+# DESENVOLUPAMENT TÈCNIC
 
 La implementació del model es pot dividir en 3 etapes diferenciades, la localització de la matrícula, la segmentació dels caràcters, i el reconeixement d’aquests.
 
@@ -111,13 +111,7 @@ La implementació del model es pot dividir en 3 etapes diferenciades, la localit
 	S'ha realitzat una representació gràfica dels resultats i anàlisi d’errors per identificar possibles millores.
 
 
-
-
-
-##################################################################################################################################################################
-
-
-DIARI DE DESENVOLUPAMENT
+# DIARI DE DESENVOLUPAMENT
 
 16/09/2025
 - Detecció de matricules en segons que imatge aconseguit.
